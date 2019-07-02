@@ -12,37 +12,49 @@ int			main(void)
 	int		tries;
 	int		*tab;
 	int		len;
+	int		replay;
 
 	srand(time(NULL));
-	mysteryWord = NULL;
-	tries = 10;
-	wordNumber = rand() % lenFile("dico.txt") + 1;
-	printf("Mot numéro : %d \n", wordNumber);
-	mysteryWord = extractWord(wordNumber, "dico.txt");
-	len = strlen(mysteryWord);
-	tab = (int *)malloc(sizeof(int)*len);
-	while (len)
+	replay = 0;
+	do
 	{
-		tab[len-1] = 0;
-		len--;
-	}
-	//printf("Mot extrait : %s\n", mysteryWord);
-	printf("Bienvenu dans le Pendu !\n\n");
-	while (tries)
-	{
-		printf("Il vous reste %d coups à jouer.\nQuel est le mot secret ? ", tries);
-		printWord(mysteryWord, tab);
-		printf("Proposez une lettre : ");
-		if (guessChar(mysteryWord, tab) == 0)
-			tries--;
-		else if (testEndGame(mysteryWord, tab) == 1)
+		mysteryWord = NULL;
+		tab = NULL;
+		tries = 10;
+		wordNumber = rand() % lenFile("dico.txt") + 1;
+		printf("Mot numéro : %d \n", wordNumber);
+		mysteryWord = extractWord(wordNumber, "dico.txt");
+		len = strlen(mysteryWord);
+		tab = (int *)malloc(sizeof(int)*len);
+		while (len)
 		{
-			printf("Gagné ! le mot secret était bien : %s.\n", mysteryWord);
-			return (0);
+			tab[len-1] = 0;
+			len--;
 		}
-		printf("\n");
-	}
-	free(mysteryWord);
+		//printf("Mot extrait : %s\n", mysteryWord);
+		printf("Bienvenu dans le Pendu !\n\n");
+		while (tries)
+		{
+			printf("Il vous reste %d coups à jouer.\nQuel est le mot secret ? ", tries);
+			printWord(mysteryWord, tab);
+			printf("Proposez une lettre : ");
+			if (guessChar(mysteryWord, tab) == 0)
+				tries--;
+			else if (testEndGame(mysteryWord, tab) == 1)
+			{
+				printf("Gagné ! le mot secret était bien : %s.\n", mysteryWord);
+				tries = 0;
+				printf("\nVoulez-vous jouer une autre partie ? 0 ou 1. ");
+				if (readChar() == '1')
+					replay = 1;
+				else
+					replay = 0;
+			}
+			printf("\n");
+		}
+		free(mysteryWord);
+		free(tab);
+	} while (replay == 1);
 	return (0);
 }
 
@@ -101,6 +113,7 @@ char		*extractWord(int wordNumber, char *filename)
 	printf("Longueur du mot : %d\n", len);
 	if (fgets(mysteryWord, len+1, file) == NULL)
 		printf("problème avec fgets");
+	mysteryWord[len] = '\0';
 	//printf("Mot extrait : %s\n", mysteryWord);
 	fclose(file);
 	return (mysteryWord);
