@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <ctype.h>
+#include <time.h>
 #include "main.h"
 
 int			main(void)
 {
-	
+	int 	wordNumber;
+	srand(time(NULL));
+	wordNumber = rand() % lenFile("dico.txt") + 1;
 	return (0);
 }
 
